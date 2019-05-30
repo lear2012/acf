@@ -78,6 +78,8 @@ class Repeater extends BasicField implements FieldInterface
         
         if ($this->postMeta instanceof \Corcel\Model\Meta\TermMeta) {
             $builder = $this->postMeta->where('term_id', $post->term_id);
+        } else if($this->postMeta instanceof \Corcel\Model\Meta\UserMeta) {
+	        $builder = $this->postMeta->where('user_id', $post->ID);
         } else {
             $builder = $this->postMeta->where('post_id', $post->ID);
         }
@@ -104,7 +106,10 @@ class Repeater extends BasicField implements FieldInterface
             $id = $this->retrieveIdFromFieldName($meta->meta_key, $fieldName);
             $name = $this->retrieveFieldName($meta->meta_key, $fieldName, $id);
 
-            $post = $this->post->ID != $meta->post_id ? $this->post->find($meta->post_id) : $this->post;
+            if(!is_null($meta->user_id))
+				$post = $post = $this->post->ID != $meta->user_id ? $this->post->find($meta->user_id) : $this->post;
+            else
+            	$post = $this->post->ID != $meta->post_id ? $this->post->find($meta->post_id) : $this->post;
             $field = FieldFactory::make($meta->meta_key, $post);
 
             if ($field == null) {
